@@ -1,0 +1,149 @@
+{
+  "id": "default-dka-scenario",
+  "name": "Tuesday Afternoon on Delivery Suite",
+  "description": "A busy Tuesday afternoon on the Delivery Suite with three women requiring assessment. One presents with vomiting and malaise (concealed DKA), another with sudden PV bleeding, and a third with reduced fetal movements. Prioritise based on clinical urgency.",
+  "briefing": "It's a busy Tuesday afternoon on the Delivery Suite. You have three women who need assessment. One has been vomiting and feeling unwell, another has had a sudden PV bleed, and a third is worried about reduced fetal movements. You need to assess, investigate, and manage each patient appropriately. Remember to prioritise based on clinical urgency.",
+  "durationMinutes": 30,
+  "patients": [
+    {
+      "key": "dka_patient",
+      "name": "Sarah Mitchell",
+      "age": 28,
+      "gestation": "32+4",
+      "parity": "G1P0",
+      "presentingComplaint": "Vomiting for 2 days, generalised abdominal pain, feels generally unwell. Partner says she's been drinking a lot of water recently.",
+      "history": "Sarah was sent in by her community midwife after reporting 2 days of persistent vomiting, abdominal pain, and general malaise. She mentions increased thirst and frequent urination over the past week. No PV bleeding or loss. Fetal movements felt but reduced from normal.",
+      "pmh": "No significant medical history. No known diabetes. BMI 31 at booking. Family history of Type 2 diabetes (mother).",
+      "allergies": "NKDA",
+      "initialVitals": {
+        "hr": 95,
+        "bpSystolic": 118,
+        "bpDiastolic": 72,
+        "rr": 20,
+        "spo2": 97,
+        "temp": 37.1,
+        "gcs": 15
+      },
+      "initialCtg": "Baseline 150bpm, variability 10-15bpm, no accelerations, no decelerations. Contractions: irregular tightenings.",
+      "deteriorationType": "dka",
+      "isDKA": true,
+      "availableActions": [
+        "check_glucose",
+        "check_ketones",
+        "request_abg",
+        "check_potassium",
+        "check_lactate",
+        "fbc",
+        "maternal_observations",
+        "continuous_ctg",
+        "escalate_registrar",
+        "escalate_consultant",
+        "start_iv_fluids",
+        "start_insulin",
+        "start_potassium_replacement"
+      ],
+      "arrivalDelayMs": 0
+    },
+    {
+      "key": "pvb_patient",
+      "name": "Lisa Thompson",
+      "age": 34,
+      "gestation": "36+1",
+      "parity": "G3P2",
+      "presentingComplaint": "PV bleeding — sudden 'gush' approximately 20 minutes ago. Soaked through pad.",
+      "history": "Lisa self-presented to Delivery Suite after a sudden gush of PV bleeding at home. She describes bright red blood soaking through one pad. No pain initially but now reports mild lower abdominal discomfort. Baby moving well.",
+      "pmh": "Previous LSCS x1 (2019, breech), SVD x1 (2021). Low-lying placenta noted at 20-week scan but reported as clear at 32-week rescan. Gestational hypertension this pregnancy — on labetalol 200mg BD.",
+      "allergies": "Penicillin (rash)",
+      "initialVitals": {
+        "hr": 105,
+        "bpSystolic": 110,
+        "bpDiastolic": 65,
+        "rr": 18,
+        "spo2": 98,
+        "temp": 36.8,
+        "gcs": 15
+      },
+      "initialCtg": "Baseline 145bpm, variability 5-10bpm (reduced), occasional accelerations, no decelerations.",
+      "deteriorationType": "pvb",
+      "isDKA": false,
+      "availableActions": [
+        "check_glucose",
+        "fbc",
+        "group_and_save",
+        "crossmatch",
+        "maternal_observations",
+        "continuous_ctg",
+        "speculum_exam",
+        "request_ultrasound",
+        "escalate_registrar",
+        "escalate_consultant",
+        "start_iv_fluids"
+      ],
+      "arrivalDelayMs": 0
+    },
+    {
+      "key": "rfm_patient",
+      "name": "Emma Williams",
+      "age": 22,
+      "gestation": "38+0",
+      "parity": "G1P0",
+      "presentingComplaint": "Hasn't felt baby move since yesterday morning. Very anxious.",
+      "history": "Emma called triage this morning reporting reduced fetal movements since yesterday. She has been busy at work and isn't sure if she might have missed movements. She felt some movement after a cold drink this morning but 'not as much as usual'. Otherwise feels well.",
+      "pmh": "No significant medical history. Straightforward pregnancy. Low-risk.",
+      "allergies": "NKDA",
+      "initialVitals": {
+        "hr": 78,
+        "bpSystolic": 115,
+        "bpDiastolic": 70,
+        "rr": 16,
+        "spo2": 99,
+        "temp": 36.6,
+        "gcs": 15
+      },
+      "initialCtg": "Baseline 135bpm, variability 15-25bpm, accelerations present, no decelerations. Reactive trace.",
+      "deteriorationType": "rfm",
+      "isDKA": false,
+      "availableActions": [
+        "maternal_observations",
+        "continuous_ctg",
+        "request_ultrasound",
+        "escalate_registrar"
+      ],
+      "arrivalDelayMs": 60000
+    }
+  ],
+  "timedEvents": [
+    {
+      "triggerAtMs": 300000,
+      "type": "resource_change",
+      "payload": {
+        "resource": "ketometer",
+        "available": false,
+        "message": "The ketone meter has been taken to A&E — not currently available on the unit."
+      }
+    },
+    {
+      "triggerAtMs": 480000,
+      "type": "message",
+      "payload": {
+        "message": "The coordinator asks if anyone can help in Room 4 — another woman is in advanced labour."
+      }
+    },
+    {
+      "triggerAtMs": 720000,
+      "type": "resource_change",
+      "payload": {
+        "resource": "ketometer",
+        "available": true,
+        "message": "A ketone meter has been found and returned to the unit."
+      }
+    },
+    {
+      "triggerAtMs": 900000,
+      "type": "message",
+      "payload": {
+        "message": "The lab has phoned — there's a delay on blood results. Expected wait now 20 minutes."
+      }
+    }
+  ]
+}

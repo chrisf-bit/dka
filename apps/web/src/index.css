@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    @apply h-full w-full overflow-hidden;
+  }
+
+  body {
+    @apply bg-sim-bg text-sim-text;
+  }
+
+  /* Custom scrollbar for event log only */
+  .scrollable::-webkit-scrollbar {
+    width: 4px;
+  }
+  .scrollable::-webkit-scrollbar-track {
+    @apply bg-sim-surface;
+  }
+  .scrollable::-webkit-scrollbar-thumb {
+    @apply bg-sim-border rounded-full;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-4 py-3 bg-nhs-blue text-white font-semibold rounded-lg
+           active:scale-95 transition-transform duration-100
+           disabled:opacity-50 disabled:cursor-not-allowed
+           focus:outline-none focus:ring-2 focus:ring-nhs-lightBlue focus:ring-offset-2 focus:ring-offset-sim-bg;
+  }
+
+  .btn-danger {
+    @apply px-4 py-3 bg-nhs-emergency text-white font-semibold rounded-lg
+           active:scale-95 transition-transform duration-100
+           disabled:opacity-50 disabled:cursor-not-allowed
+           focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 focus:ring-offset-sim-bg;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-3 bg-sim-surfaceLight text-sim-text font-medium rounded-lg border border-sim-border
+           active:scale-95 transition-transform duration-100
+           disabled:opacity-50 disabled:cursor-not-allowed
+           focus:outline-none focus:ring-2 focus:ring-sim-border focus:ring-offset-2 focus:ring-offset-sim-bg;
+  }
+
+  .card {
+    @apply bg-sim-surface rounded-xl border border-sim-border p-4;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 bg-sim-surface border border-sim-border rounded-lg
+           text-sim-text placeholder-sim-textMuted text-lg
+           focus:outline-none focus:ring-2 focus:ring-nhs-blue focus:border-nhs-blue;
+  }
+
+  .status-stable { @apply text-sim-stable; }
+  .status-concerning { @apply text-sim-concerning; }
+  .status-critical { @apply text-sim-critical; }
+  .status-collapsed { @apply text-red-300 animate-pulse-alert; }
+  .status-resolved { @apply text-nhs-lightBlue; }
+}

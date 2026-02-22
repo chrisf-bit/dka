@@ -1,0 +1,383 @@
+{
+  "version": 1,
+  "dkaTriggers": {
+    "glucoseThreshold": 11.0,
+    "ketoneThreshold": 3.0,
+    "phThreshold": 7.3,
+    "bicarbThreshold": 15
+  },
+  "investigations": [
+    {
+      "key": "check_glucose",
+      "label": "Check Blood Glucose",
+      "description": "Point-of-care capillary blood glucose measurement",
+      "category": "investigation",
+      "delayMs": 30000,
+      "prerequisites": [],
+      "icon": "🩸"
+    },
+    {
+      "key": "check_ketones",
+      "label": "Check Blood Ketones",
+      "description": "Point-of-care capillary ketone measurement using ketometer",
+      "category": "investigation",
+      "delayMs": 45000,
+      "prerequisites": [],
+      "icon": "🧪"
+    },
+    {
+      "key": "request_abg",
+      "label": "Request Arterial Blood Gas",
+      "description": "Arterial blood gas to assess pH, bicarbonate, lactate and electrolytes",
+      "category": "investigation",
+      "delayMs": 180000,
+      "prerequisites": [],
+      "icon": "💉"
+    },
+    {
+      "key": "check_potassium",
+      "label": "Check Serum Potassium",
+      "description": "Urgent serum potassium level — critical before starting insulin",
+      "category": "investigation",
+      "delayMs": 120000,
+      "prerequisites": [],
+      "icon": "⚗️"
+    },
+    {
+      "key": "check_lactate",
+      "label": "Check Lactate",
+      "description": "Serum lactate to assess tissue perfusion and sepsis risk",
+      "category": "investigation",
+      "delayMs": 60000,
+      "prerequisites": [],
+      "icon": "🔬"
+    },
+    {
+      "key": "fbc",
+      "label": "Full Blood Count",
+      "description": "FBC to assess Hb, WCC, platelets — baseline and infection screen",
+      "category": "investigation",
+      "delayMs": 180000,
+      "prerequisites": [],
+      "icon": "🧫"
+    },
+    {
+      "key": "group_and_save",
+      "label": "Group and Save",
+      "description": "Blood group and antibody screen — required before crossmatch",
+      "category": "investigation",
+      "delayMs": 120000,
+      "prerequisites": [],
+      "icon": "🏷️"
+    },
+    {
+      "key": "crossmatch",
+      "label": "Crossmatch",
+      "description": "Crossmatch 2 units packed red cells in case of emergency delivery",
+      "category": "investigation",
+      "delayMs": 300000,
+      "prerequisites": ["group_and_save"],
+      "icon": "🅰️"
+    },
+    {
+      "key": "maternal_observations",
+      "label": "Maternal Observations",
+      "description": "Full set of maternal observations including NEWS2 score",
+      "category": "monitoring",
+      "delayMs": 15000,
+      "prerequisites": [],
+      "icon": "📋"
+    },
+    {
+      "key": "continuous_ctg",
+      "label": "Continuous CTG",
+      "description": "Apply continuous cardiotocograph for fetal heart rate monitoring",
+      "category": "monitoring",
+      "delayMs": 10000,
+      "prerequisites": [],
+      "icon": "📈"
+    },
+    {
+      "key": "speculum_exam",
+      "label": "Speculum Examination",
+      "description": "Sterile speculum examination to assess cervix and rule out membrane rupture",
+      "category": "investigation",
+      "delayMs": 120000,
+      "prerequisites": [],
+      "icon": "🔍"
+    },
+    {
+      "key": "request_ultrasound",
+      "label": "Request Ultrasound",
+      "description": "Bedside ultrasound to assess fetal wellbeing, liquor volume and presentation",
+      "category": "investigation",
+      "delayMs": 600000,
+      "prerequisites": [],
+      "icon": "🖥️"
+    },
+    {
+      "key": "escalate_registrar",
+      "label": "Escalate to Registrar",
+      "description": "Contact obstetric registrar for senior review",
+      "category": "escalation",
+      "delayMs": 60000,
+      "prerequisites": [],
+      "icon": "📞"
+    },
+    {
+      "key": "escalate_consultant",
+      "label": "Escalate to Consultant",
+      "description": "Contact on-call consultant obstetrician — requires registrar awareness first",
+      "category": "escalation",
+      "delayMs": 120000,
+      "prerequisites": ["escalate_registrar"],
+      "icon": "🚨"
+    },
+    {
+      "key": "start_iv_fluids",
+      "label": "Start IV Fluids",
+      "description": "Commence intravenous fluid resuscitation with 0.9% sodium chloride",
+      "category": "treatment",
+      "delayMs": 120000,
+      "prerequisites": [],
+      "icon": "💧"
+    },
+    {
+      "key": "start_insulin",
+      "label": "Start Fixed-Rate Insulin Infusion",
+      "description": "Commence fixed-rate IV insulin infusion at 0.1 units/kg/hr — fluids must be running first",
+      "category": "treatment",
+      "delayMs": 180000,
+      "prerequisites": ["start_iv_fluids"],
+      "icon": "💉"
+    },
+    {
+      "key": "start_potassium_replacement",
+      "label": "Start Potassium Replacement",
+      "description": "IV potassium chloride replacement — must check serum K+ level first",
+      "category": "treatment",
+      "delayMs": 120000,
+      "prerequisites": ["check_potassium"],
+      "icon": "🧂"
+    }
+  ],
+  "escalation": {
+    "newsScoreThreshold": 5,
+    "autoEscalateAt": "critical"
+  },
+  "treatment": {
+    "fluidProtocol": {
+      "firstBagVolume": 1000,
+      "firstBagRateMinutes": 60,
+      "subsequentRate": 250
+    },
+    "insulinProtocol": {
+      "startAfterFluids": true,
+      "rate": 0.1
+    },
+    "potassiumProtocol": {
+      "checkBeforeInsulin": true,
+      "replaceIfBelow": 5.5
+    }
+  },
+  "deteriorationCurves": {
+    "dka": {
+      "stages": [
+        {
+          "name": "stable",
+          "durationMs": 300000,
+          "vitals": {
+            "hr": 95,
+            "bpSystolic": 118,
+            "bpDiastolic": 72,
+            "rr": 20,
+            "spo2": 97,
+            "temp": 37.1,
+            "gcs": 15,
+            "glucose": 18.5,
+            "ketones": 4.2,
+            "pH": 7.28,
+            "bicarb": 14
+          },
+          "ctgSummary": "Normal baseline 140 bpm, moderate variability, no decelerations",
+          "fetalStatus": "reassuring"
+        },
+        {
+          "name": "concerning",
+          "durationMs": 300000,
+          "vitals": {
+            "hr": 110,
+            "bpSystolic": 105,
+            "bpDiastolic": 65,
+            "rr": 26,
+            "spo2": 95,
+            "temp": 37.4,
+            "gcs": 14,
+            "glucose": 22.0,
+            "ketones": 5.1,
+            "pH": 7.18,
+            "bicarb": 10
+          },
+          "ctgSummary": "Baseline 155 bpm, reduced variability, occasional variable decelerations",
+          "fetalStatus": "non_reassuring"
+        },
+        {
+          "name": "critical",
+          "durationMs": 300000,
+          "vitals": {
+            "hr": 125,
+            "bpSystolic": 95,
+            "bpDiastolic": 55,
+            "rr": 32,
+            "spo2": 92,
+            "temp": 37.8,
+            "gcs": 12,
+            "glucose": 26.5,
+            "ketones": 6.4,
+            "pH": 7.08,
+            "bicarb": 6
+          },
+          "ctgSummary": "Baseline 170 bpm, absent variability, repetitive late decelerations",
+          "fetalStatus": "pathological"
+        },
+        {
+          "name": "collapsed",
+          "durationMs": 300000,
+          "vitals": {
+            "hr": 140,
+            "bpSystolic": 82,
+            "bpDiastolic": 48,
+            "rr": 38,
+            "spo2": 89,
+            "temp": 38.2,
+            "gcs": 9,
+            "glucose": 30.0,
+            "ketones": 7.8,
+            "pH": 6.95,
+            "bicarb": 3
+          },
+          "ctgSummary": "Prolonged bradycardia 70 bpm, absent variability",
+          "fetalStatus": "pathological"
+        },
+        {
+          "name": "crash_call",
+          "durationMs": 300000,
+          "vitals": {
+            "hr": 145,
+            "bpSystolic": 80,
+            "bpDiastolic": 45,
+            "rr": 40,
+            "spo2": 88,
+            "temp": 38.5,
+            "gcs": 7,
+            "glucose": 33.0,
+            "ketones": 8.5,
+            "pH": 6.85,
+            "bicarb": 2
+          },
+          "ctgSummary": "No fetal heart rate detected",
+          "fetalStatus": "iud"
+        }
+      ]
+    },
+    "pvb": {
+      "stages": [
+        {
+          "name": "concerning",
+          "durationMs": 180000,
+          "vitals": {
+            "hr": 105,
+            "bpSystolic": 108,
+            "bpDiastolic": 68,
+            "rr": 22,
+            "spo2": 97,
+            "temp": 36.8,
+            "gcs": 15
+          },
+          "ctgSummary": "Baseline 145 bpm, moderate variability, no decelerations",
+          "fetalStatus": "reassuring"
+        },
+        {
+          "name": "stable",
+          "durationMs": 180000,
+          "vitals": {
+            "hr": 92,
+            "bpSystolic": 115,
+            "bpDiastolic": 72,
+            "rr": 18,
+            "spo2": 98,
+            "temp": 36.7,
+            "gcs": 15
+          },
+          "ctgSummary": "Baseline 140 bpm, normal variability, accelerations present",
+          "fetalStatus": "reassuring"
+        },
+        {
+          "name": "resolved",
+          "durationMs": 180000,
+          "vitals": {
+            "hr": 82,
+            "bpSystolic": 118,
+            "bpDiastolic": 74,
+            "rr": 16,
+            "spo2": 99,
+            "temp": 36.6,
+            "gcs": 15
+          },
+          "ctgSummary": "Normal baseline 138 bpm, normal variability, reactive trace",
+          "fetalStatus": "reassuring"
+        }
+      ]
+    },
+    "rfm": {
+      "stages": [
+        {
+          "name": "stable",
+          "durationMs": 120000,
+          "vitals": {
+            "hr": 78,
+            "bpSystolic": 120,
+            "bpDiastolic": 75,
+            "rr": 16,
+            "spo2": 99,
+            "temp": 36.5,
+            "gcs": 15
+          },
+          "ctgSummary": "Baseline 142 bpm, normal variability, accelerations present",
+          "fetalStatus": "reassuring"
+        },
+        {
+          "name": "resolved",
+          "durationMs": 120000,
+          "vitals": {
+            "hr": 76,
+            "bpSystolic": 118,
+            "bpDiastolic": 73,
+            "rr": 15,
+            "spo2": 99,
+            "temp": 36.5,
+            "gcs": 15
+          },
+          "ctgSummary": "Normal reactive trace, baseline 140 bpm, multiple accelerations, fetal movements noted",
+          "fetalStatus": "reassuring"
+        }
+      ]
+    }
+  },
+  "scoring": {
+    "recognitionTargetMs": 300000,
+    "escalationTargetMs": 480000,
+    "treatmentTargetMs": 600000,
+    "recognitionMaxScore": 20,
+    "escalationMaxScore": 15,
+    "treatmentMaxScore": 15,
+    "outcomeMaxScore": 40,
+    "actionsMaxScore": 10
+  },
+  "resources": {
+    "ketometerAvailable": true,
+    "ketometerUnavailableProbability": 0.3,
+    "labDelayMs": 180000,
+    "staffBusyProbability": 0.2
+  }
+}
