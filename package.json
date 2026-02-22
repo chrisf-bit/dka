@@ -2,8 +2,8 @@
   "name": "dka-sim",
   "private": true,
   "scripts": {
-    "dev": "pnpm --parallel -r run dev",
-    "build": "pnpm -r run build",
+    "dev": "pnpm --filter @dka-sim/shared build && pnpm --parallel -r run dev",
+    "build": "pnpm --filter @dka-sim/shared build && pnpm --parallel --filter !@dka-sim/shared -r run build",
     "test": "pnpm -r run test",
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write \"**/*.{ts,tsx,json,css}\""
