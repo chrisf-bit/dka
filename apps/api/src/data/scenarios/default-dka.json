@@ -3,7 +3,7 @@
   "name": "Tuesday Afternoon on Delivery Suite",
   "description": "A busy Tuesday afternoon on the Delivery Suite with seven women on the board. Three require urgent assessment: one presents with vomiting and malaise (concealed DKA), another with sudden PV bleeding, and a third with reduced fetal movements. The remaining four are progressing normally but still need monitoring. Prioritise based on clinical urgency.",
   "briefing": "It's a busy Tuesday afternoon on the Delivery Suite. There are seven women on the board. Three need your urgent attention: one has been vomiting and feeling unwell, another has had a sudden PV bleed, and a third is worried about reduced fetal movements. Four other women are progressing normally in labour or postnatal care. You need to assess, investigate, and manage each patient appropriately. Remember to prioritise based on clinical urgency.",
-  "durationMinutes": 30,
+  "durationMinutes": 15,
   "patients": [
     {
       "key": "dka_patient",

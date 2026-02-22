@@ -83,7 +83,7 @@ export default function BriefingCards({ briefing, patientCount, durationMinutes,
         <div className="space-y-2">
           <Step num={1} text="Discuss with your team, then tap an action to submit it" />
           <Step num={2} text="Some actions take time — watch for the 'processing' state" />
-          <Step num={3} text="Results appear as overlays — read them carefully" />
+          <Step num={3} text="Results appear as overlays — read them carefully before deciding next steps" />
           <Step num={4} text="Some actions unlock others (e.g. IV access before fluids)" />
         </div>
       ),
