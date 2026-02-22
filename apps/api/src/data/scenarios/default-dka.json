@@ -1,8 +1,8 @@
 {
   "id": "default-dka-scenario",
   "name": "Tuesday Afternoon on Delivery Suite",
-  "description": "A busy Tuesday afternoon on the Delivery Suite with three women requiring assessment. One presents with vomiting and malaise (concealed DKA), another with sudden PV bleeding, and a third with reduced fetal movements. Prioritise based on clinical urgency.",
-  "briefing": "It's a busy Tuesday afternoon on the Delivery Suite. You have three women who need assessment. One has been vomiting and feeling unwell, another has had a sudden PV bleed, and a third is worried about reduced fetal movements. You need to assess, investigate, and manage each patient appropriately. Remember to prioritise based on clinical urgency.",
+  "description": "A busy Tuesday afternoon on the Delivery Suite with seven women on the board. Three require urgent assessment: one presents with vomiting and malaise (concealed DKA), another with sudden PV bleeding, and a third with reduced fetal movements. The remaining four are progressing normally but still need monitoring. Prioritise based on clinical urgency.",
+  "briefing": "It's a busy Tuesday afternoon on the Delivery Suite. There are seven women on the board. Three need your urgent attention: one has been vomiting and feeling unwell, another has had a sudden PV bleed, and a third is worried about reduced fetal movements. Four other women are progressing normally in labour or postnatal care. You need to assess, investigate, and manage each patient appropriately. Remember to prioritise based on clinical urgency.",
   "durationMinutes": 30,
   "patients": [
     {
@@ -38,6 +38,7 @@
         "continuous_ctg",
         "escalate_registrar",
         "escalate_consultant",
+        "obtain_iv_access",
         "start_iv_fluids",
         "start_insulin",
         "start_potassium_replacement"
@@ -77,6 +78,7 @@
         "request_ultrasound",
         "escalate_registrar",
         "escalate_consultant",
+        "obtain_iv_access",
         "start_iv_fluids"
       ],
       "arrivalDelayMs": 0
@@ -110,6 +112,119 @@
         "escalate_registrar"
       ],
       "arrivalDelayMs": 60000
+    },
+    {
+      "key": "labour_patient",
+      "name": "Priya Patel",
+      "age": 30,
+      "gestation": "39+2",
+      "parity": "G2P1",
+      "presentingComplaint": "In established labour, contracting 3 in 10. Progressing well.",
+      "history": "Priya was admitted 4 hours ago in spontaneous labour. ARM performed at 5cm, clear liquor. Now 7cm on last VE 1 hour ago. Coping well with entonox. Previous SVD 2022, no complications.",
+      "pmh": "No significant medical history. Straightforward pregnancy.",
+      "allergies": "NKDA",
+      "initialVitals": {
+        "hr": 82,
+        "bpSystolic": 122,
+        "bpDiastolic": 74,
+        "rr": 18,
+        "spo2": 98,
+        "temp": 36.7,
+        "gcs": 15
+      },
+      "initialCtg": "Baseline 140bpm, variability 10-25bpm, accelerations present, no decelerations. Normal trace.",
+      "deteriorationType": "normal_labour",
+      "isDKA": false,
+      "availableActions": [
+        "maternal_observations",
+        "continuous_ctg"
+      ],
+      "arrivalDelayMs": 0
+    },
+    {
+      "key": "induction_patient",
+      "name": "Jenny Adams",
+      "age": 37,
+      "gestation": "41+3",
+      "parity": "G1P0",
+      "presentingComplaint": "Post-dates induction. Syntocinon commenced 2 hours ago.",
+      "history": "Jenny was admitted yesterday for post-dates induction. Propess inserted yesterday, ARM this morning with clear liquor. Syntocinon started 2 hours ago, currently on 6ml/hr. Contracting 2 in 10, mild. Last VE: 3cm dilated.",
+      "pmh": "Hypothyroidism — on levothyroxine 75mcg. Otherwise well.",
+      "allergies": "NKDA",
+      "initialVitals": {
+        "hr": 88,
+        "bpSystolic": 128,
+        "bpDiastolic": 78,
+        "rr": 17,
+        "spo2": 98,
+        "temp": 36.8,
+        "gcs": 15
+      },
+      "initialCtg": "Baseline 145bpm, variability 10-15bpm, no accelerations, no decelerations. Satisfactory trace.",
+      "deteriorationType": "induction",
+      "isDKA": false,
+      "availableActions": [
+        "maternal_observations",
+        "continuous_ctg"
+      ],
+      "arrivalDelayMs": 0
+    },
+    {
+      "key": "pih_patient",
+      "name": "Maria Santos",
+      "age": 33,
+      "gestation": "35+5",
+      "parity": "G3P2",
+      "presentingComplaint": "Raised BP at clinic. Admitted for monitoring and steroids.",
+      "history": "Maria was referred from antenatal clinic with BP 148/95. She reports mild headache but no visual disturbance, epigastric pain, or clonus. Urine dip: protein 1+. Bloods sent including pre-eclampsia screen. First dose of betamethasone given. On magnesium sulphate observation chart.",
+      "pmh": "Gestational hypertension in previous pregnancy (2020). Two previous SVDs, no complications.",
+      "allergies": "Codeine (nausea)",
+      "initialVitals": {
+        "hr": 84,
+        "bpSystolic": 148,
+        "bpDiastolic": 95,
+        "rr": 18,
+        "spo2": 97,
+        "temp": 36.6,
+        "gcs": 15
+      },
+      "initialCtg": "Baseline 138bpm, variability 10-15bpm, occasional accelerations, no decelerations.",
+      "deteriorationType": "pre_eclampsia_stable",
+      "isDKA": false,
+      "availableActions": [
+        "maternal_observations",
+        "continuous_ctg",
+        "fbc",
+        "escalate_registrar"
+      ],
+      "arrivalDelayMs": 0
+    },
+    {
+      "key": "postnatal_patient",
+      "name": "Hannah Clarke",
+      "age": 26,
+      "gestation": "40+0",
+      "parity": "G2P2",
+      "presentingComplaint": "Postnatal — SVD 2 hours ago. Awaiting checks and discharge.",
+      "history": "Hannah delivered a healthy boy (3.6kg) by SVD 2 hours ago. Physiological third stage, intact perineum. EBL 250ml. Breastfeeding initiated. Baby well, Apgar 9/10 at 1 and 5 minutes. Awaiting postnatal observations and newborn checks before discharge.",
+      "pmh": "No significant medical history. Previous SVD 2023, straightforward.",
+      "allergies": "NKDA",
+      "initialVitals": {
+        "hr": 76,
+        "bpSystolic": 118,
+        "bpDiastolic": 72,
+        "rr": 16,
+        "spo2": 99,
+        "temp": 36.5,
+        "gcs": 15
+      },
+      "initialCtg": "N/A — postnatal",
+      "deteriorationType": "postnatal",
+      "isDKA": false,
+      "availableActions": [
+        "maternal_observations"
+      ],
+      "arrivalDelayMs": 0
     }
   ],
   "timedEvents": [

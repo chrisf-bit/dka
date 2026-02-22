@@ -134,12 +134,21 @@
       "icon": "🚨"
     },
     {
+      "key": "obtain_iv_access",
+      "label": "Obtain IV Access",
+      "description": "Insert large-bore IV cannula (16G or 18G) and flush — required before any IV therapy",
+      "category": "treatment",
+      "delayMs": 60000,
+      "prerequisites": [],
+      "icon": "IV"
+    },
+    {
       "key": "start_iv_fluids",
       "label": "Start IV Fluids",
       "description": "Commence intravenous fluid resuscitation with 0.9% sodium chloride",
       "category": "treatment",
       "delayMs": 120000,
-      "prerequisites": [],
+      "prerequisites": ["obtain_iv_access"],
       "icon": "💧"
     },
     {
@@ -359,6 +368,82 @@
             "gcs": 15
           },
           "ctgSummary": "Normal reactive trace, baseline 140 bpm, multiple accelerations, fetal movements noted",
+          "fetalStatus": "reassuring"
+        }
+      ]
+    },
+    "normal_labour": {
+      "stages": [
+        {
+          "name": "stable",
+          "durationMs": 900000,
+          "vitals": {
+            "hr": 82,
+            "bpSystolic": 122,
+            "bpDiastolic": 74,
+            "rr": 18,
+            "spo2": 98,
+            "temp": 36.7,
+            "gcs": 15
+          },
+          "ctgSummary": "Baseline 140 bpm, normal variability, accelerations present",
+          "fetalStatus": "reassuring"
+        }
+      ]
+    },
+    "induction": {
+      "stages": [
+        {
+          "name": "stable",
+          "durationMs": 900000,
+          "vitals": {
+            "hr": 88,
+            "bpSystolic": 128,
+            "bpDiastolic": 78,
+            "rr": 17,
+            "spo2": 98,
+            "temp": 36.8,
+            "gcs": 15
+          },
+          "ctgSummary": "Baseline 145 bpm, normal variability, no decelerations",
+          "fetalStatus": "reassuring"
+        }
+      ]
+    },
+    "pre_eclampsia_stable": {
+      "stages": [
+        {
+          "name": "stable",
+          "durationMs": 900000,
+          "vitals": {
+            "hr": 84,
+            "bpSystolic": 148,
+            "bpDiastolic": 95,
+            "rr": 18,
+            "spo2": 97,
+            "temp": 36.6,
+            "gcs": 15
+          },
+          "ctgSummary": "Baseline 138 bpm, normal variability, occasional accelerations",
+          "fetalStatus": "reassuring"
+        }
+      ]
+    },
+    "postnatal": {
+      "stages": [
+        {
+          "name": "stable",
+          "durationMs": 900000,
+          "vitals": {
+            "hr": 76,
+            "bpSystolic": 118,
+            "bpDiastolic": 72,
+            "rr": 16,
+            "spo2": 99,
+            "temp": 36.5,
+            "gcs": 15
+          },
+          "ctgSummary": "N/A — postnatal",
           "fetalStatus": "reassuring"
         }
       ]
