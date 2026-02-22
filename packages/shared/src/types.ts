@@ -58,6 +58,8 @@ export interface Patient {
   scenarioPatientKey: string;
   name: string;
   age: number;
+  height: number;
+  weight: number;
   gestation: string;
   parity: string;
   presentingComplaint: string;
@@ -205,6 +207,8 @@ export interface ScenarioPatientDef {
   key: string;
   name: string;
   age: number;
+  height: number;
+  weight: number;
   gestation: string;
   parity: string;
   presentingComplaint: string;

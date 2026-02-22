@@ -68,7 +68,7 @@ export default function PatientView() {
           <div className="min-w-0">
             <div className="font-bold text-sm truncate">{patient.name}</div>
             <div className="text-[11px] text-sim-textMuted">
-              {patient.age}y &middot; {patient.gestation}
+              {patient.age}y &middot; {patient.gestation} &middot; {patient.weight}kg
             </div>
           </div>
           <button

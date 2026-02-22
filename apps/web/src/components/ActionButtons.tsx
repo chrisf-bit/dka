@@ -1,9 +1,32 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import { socket } from '../lib/socket';
 import { useSessionStore } from '../stores/sessionStore';
 import { Search, BarChart3, Phone, Syringe, CheckCircle, Loader, Play } from 'lucide-react';
 import gsap from 'gsap';
 import type { ActionDefinition, ActionCategory } from '@dka-sim/shared';
+
+/** Simple seeded PRNG so the shuffle is stable per patient */
+function seededRandom(seed: string) {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) {
+    h = Math.imul(31, h) + seed.charCodeAt(i) | 0;
+  }
+  return () => {
+    h = Math.imul(h ^ (h >>> 16), 0x45d9f3b);
+    h = Math.imul(h ^ (h >>> 13), 0x45d9f3b);
+    h = (h ^ (h >>> 16)) >>> 0;
+    return h / 0x100000000;
+  };
+}
+
+function shuffleArray<T>(arr: T[], rng: () => number): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 interface Props {
   patientId: string;
@@ -71,13 +94,19 @@ export default function ActionButtons({
     return null;
   };
 
-  // Group actions by category
-  const grouped = CATEGORY_ORDER.map((cat) => ({
-    category: cat,
-    actions: actionDefinitions.filter(
-      (a) => a.category === cat && availableActions.includes(a.key),
-    ),
-  })).filter((g) => g.actions.length > 0);
+  // Group actions by category, shuffled within each group
+  const grouped = useMemo(() => {
+    const rng = seededRandom(patientId);
+    return CATEGORY_ORDER.map((cat) => ({
+      category: cat,
+      actions: shuffleArray(
+        actionDefinitions.filter(
+          (a) => a.category === cat && availableActions.includes(a.key),
+        ),
+        rng,
+      ),
+    })).filter((g) => g.actions.length > 0);
+  }, [patientId, actionDefinitions, availableActions]);
 
   return (
     <div ref={listRef} className="space-y-3">

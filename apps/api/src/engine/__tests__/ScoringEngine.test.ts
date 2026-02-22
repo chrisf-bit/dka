@@ -47,6 +47,8 @@ function makePatient(overrides: Partial<Patient> = {}): Patient {
     scenarioPatientKey: 'dka_patient',
     name: 'Sarah Mitchell',
     age: 28,
+    height: 165,
+    weight: 84,
     gestation: '32+4',
     parity: 'G1P0',
     presentingComplaint: 'Vomiting',

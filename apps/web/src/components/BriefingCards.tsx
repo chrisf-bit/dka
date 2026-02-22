@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, Users, Target, Clock, AlertTriangle } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Users, Target, Layout, AlertTriangle, Activity, FileText, Zap, ArrowDown } from 'lucide-react';
 import gsap from 'gsap';
 
 interface Props {
@@ -27,21 +27,9 @@ export default function BriefingCards({ briefing, patientCount, durationMinutes,
         <div className="space-y-3">
           <p className="text-sm text-sim-textMuted leading-relaxed">
             You are a team of midwives working on the Delivery Suite.
-            Work together to assess and manage your patients.
+            Work together to assess and manage your patient.
           </p>
-          <p className="text-sm text-sim-textMuted leading-relaxed">
-            Discuss each decision as a team before taking action.
-          </p>
-        </div>
-      ),
-    },
-    {
-      title: 'Your Mission',
-      icon: <Target className="w-8 h-8 text-nhs-lightBlue" />,
-      content: (
-        <div className="space-y-3">
-          <p className="text-sm text-sim-textMuted leading-relaxed">{briefing}</p>
-          <div className="flex items-center gap-4 mt-4">
+          <div className="flex items-center gap-4 mt-2">
             <div className="bg-sim-bg rounded-lg px-3 py-2 text-center">
               <div className="text-lg font-bold text-white">{patientCount}</div>
               <div className="text-[10px] text-sim-textMuted uppercase">Patients</div>
@@ -55,14 +43,48 @@ export default function BriefingCards({ briefing, patientCount, durationMinutes,
       ),
     },
     {
-      title: 'How It Works',
-      icon: <Clock className="w-8 h-8 text-nhs-lightBlue" />,
+      title: 'The Scenario',
+      icon: <Target className="w-8 h-8 text-nhs-lightBlue" />,
+      content: (
+        <div className="space-y-3">
+          <p className="text-sm text-sim-textMuted leading-relaxed">{briefing}</p>
+        </div>
+      ),
+    },
+    {
+      title: 'Your Screen',
+      icon: <Layout className="w-8 h-8 text-nhs-lightBlue" />,
+      content: (
+        <div className="space-y-2 w-full">
+          <ScreenSection
+            icon={<Activity className="w-3.5 h-3.5 text-sim-critical" />}
+            title="Vitals Strip"
+            desc="Live observations across the top — HR, BP, SpO2 and more"
+          />
+          <ArrowDown className="w-3.5 h-3.5 text-sim-textMuted mx-auto" />
+          <ScreenSection
+            icon={<FileText className="w-3.5 h-3.5 text-nhs-lightBlue" />}
+            title="Patient Info"
+            desc="Tap the file icon for full history, PMH, allergies and CTG"
+          />
+          <ArrowDown className="w-3.5 h-3.5 text-sim-textMuted mx-auto" />
+          <ScreenSection
+            icon={<Zap className="w-3.5 h-3.5 text-sim-concerning" />}
+            title="Actions"
+            desc="Investigate, monitor, escalate and treat — grouped by category"
+          />
+        </div>
+      ),
+    },
+    {
+      title: 'How Actions Work',
+      icon: <Zap className="w-8 h-8 text-nhs-lightBlue" />,
       content: (
         <div className="space-y-2">
-          <Step num={1} text="Review your patient's vitals and history" />
-          <Step num={2} text="Choose investigations and actions" />
-          <Step num={3} text="Results arrive in real time — stay vigilant" />
-          <Step num={4} text="Escalate and treat as clinically indicated" />
+          <Step num={1} text="Discuss with your team, then tap an action to submit it" />
+          <Step num={2} text="Some actions take time — watch for the 'processing' state" />
+          <Step num={3} text="Results appear as overlays — read them carefully" />
+          <Step num={4} text="Some actions unlock others (e.g. IV access before fluids)" />
         </div>
       ),
     },
@@ -113,7 +135,7 @@ export default function BriefingCards({ briefing, patientCount, durationMinutes,
 
   return (
     <div className="fixed inset-0 z-50 bg-sim-bg/95 flex items-center justify-center p-4">
-      <div className="w-full max-w-sm flex flex-col h-full max-h-[500px] justify-between">
+      <div className="w-full max-w-sm flex flex-col h-full max-h-[540px] justify-between">
         {/* Card */}
         <div ref={cardRef} className="card flex-1 flex flex-col items-center text-center px-6 py-8">
           <div className="mb-4">{card.icon}</div>
@@ -166,6 +188,18 @@ function Step({ num, text }: { num: number; text: string }) {
         {num}
       </div>
       <p className="text-sm text-sim-textMuted">{text}</p>
+    </div>
+  );
+}
+
+function ScreenSection({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
+  return (
+    <div className="flex items-start gap-3 text-left bg-sim-bg rounded-lg px-3 py-2">
+      <div className="shrink-0 mt-0.5">{icon}</div>
+      <div>
+        <div className="text-xs font-semibold text-white">{title}</div>
+        <div className="text-[11px] text-sim-textMuted leading-snug">{desc}</div>
+      </div>
     </div>
   );
 }

@@ -58,7 +58,7 @@ export default function PatientInfoOverlay({ patient, onClose }: Props) {
           <div>
             <h2 className="font-bold text-base">{patient.name}</h2>
             <p className="text-xs text-sim-textMuted">
-              {patient.age}y &middot; {patient.parity} &middot; {patient.gestation}
+              {patient.age}y &middot; {patient.parity} &middot; {patient.gestation} &middot; {patient.height}cm / {patient.weight}kg
             </p>
           </div>
           <button

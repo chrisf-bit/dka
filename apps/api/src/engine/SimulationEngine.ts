@@ -42,6 +42,8 @@ export function initializeSession(
       scenarioPatientKey: patientDef.key,
       name: patientDef.name,
       age: patientDef.age,
+      height: patientDef.height,
+      weight: patientDef.weight,
       gestation: patientDef.gestation,
       parity: patientDef.parity,
       presentingComplaint: patientDef.presentingComplaint,
