@@ -300,6 +300,12 @@ function simulationTick(sessionId: string, emit: EmitFn): void {
       });
       emit('event:logged', { event: logEntry });
     }
+
+    // Sync updated patient state (completedActions, pendingActions) to clients
+    if (actionResults.length > 0) {
+      const updatedPatient = db.getPatient(patient.id)!;
+      emit('patient:updated', { patient: updatedPatient });
+    }
   }
 
   // Check timed events from scenario

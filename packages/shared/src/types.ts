@@ -328,6 +328,7 @@ export interface ServerToClientEvents {
     ctgSummary: string;
   }) => void;
   'patient:arrived': (data: { patient: Patient }) => void;
+  'patient:updated': (data: { patient: Patient }) => void;
   'patient:statusChange': (data: {
     patientId: string;
     oldStatus: PatientStatus;

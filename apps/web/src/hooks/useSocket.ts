@@ -71,6 +71,10 @@ export function useSocket() {
       store.addPatient(data.patient);
     });
 
+    socket.on('patient:updated', (data) => {
+      store.addPatient(data.patient);
+    });
+
     socket.on('patient:statusChange', (data) => {
       store.addAlert({
         patientId: data.patientId,
@@ -126,6 +130,7 @@ export function useSocket() {
       socket.off('user:assigned');
       socket.off('patient:vitalsUpdate');
       socket.off('patient:arrived');
+      socket.off('patient:updated');
       socket.off('patient:statusChange');
       socket.off('action:pending');
       socket.off('action:result');
