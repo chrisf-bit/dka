@@ -51,6 +51,7 @@ interface SessionStore {
   // Pending action results
   pendingActions: Map<string, { actionKey: string; delayMs: number; submittedAt: number }>;
   actionResults: Map<string, Record<string, unknown>>;
+  completedResults: Array<{ key: string; result: Record<string, unknown>; acknowledgedAt: number }>;
 
   // Actions
   setConnected: (connected: boolean) => void;
@@ -120,6 +121,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   hasDismissedBriefing: false,
   pendingActions: new Map(),
   actionResults: new Map(),
+  completedResults: [],
 
   setConnected: (connected) => set({ connected }),
   setError: (error) => set({ error }),
@@ -226,8 +228,14 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   clearActionResult: (key) => {
     set((s) => {
       const map = new Map(s.actionResults);
+      const result = map.get(key);
       map.delete(key);
-      return { actionResults: map };
+      return {
+        actionResults: map,
+        completedResults: result
+          ? [...s.completedResults, { key, result, acknowledgedAt: Date.now() }]
+          : s.completedResults,
+      };
     });
   },
 
@@ -248,6 +256,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       error: null,
       pendingActions: new Map(),
       actionResults: new Map(),
+      completedResults: [],
     }),
 
   myPatient: () => {

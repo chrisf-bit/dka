@@ -6,7 +6,8 @@ import ActionButtons from '../components/ActionButtons';
 import TimerBar from '../components/TimerBar';
 import ActionResultOverlay from '../components/ActionResultOverlay';
 import PatientInfoOverlay from '../components/PatientInfoOverlay';
-import { Loader, FileText } from 'lucide-react';
+import ResultsLogOverlay from '../components/ResultsLogOverlay';
+import { Loader, FileText, ClipboardList } from 'lucide-react';
 import gsap from 'gsap';
 
 export default function PatientView() {
@@ -16,7 +17,9 @@ export default function PatientView() {
   const debrief = useSessionStore((s) => s.debrief);
   const actionResults = useSessionStore((s) => s.actionResults);
   const clearActionResult = useSessionStore((s) => s.clearActionResult);
+  const completedResults = useSessionStore((s) => s.completedResults);
   const [showInfo, setShowInfo] = useState(false);
+  const [showResults, setShowResults] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const patient = myPatient();
@@ -78,6 +81,18 @@ export default function PatientView() {
           >
             <FileText className="w-4 h-4 text-nhs-lightBlue" />
           </button>
+          <button
+            onClick={() => setShowResults(true)}
+            className="shrink-0 p-1.5 rounded-lg bg-sim-surfaceLight hover:bg-nhs-blue/20 transition-colors relative"
+            title="Results log"
+          >
+            <ClipboardList className="w-4 h-4 text-nhs-lightBlue" />
+            {completedResults.length > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-nhs-blue text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                {completedResults.length}
+              </span>
+            )}
+          </button>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <span
@@ -127,6 +142,11 @@ export default function PatientView() {
       {/* Patient info bottom sheet */}
       {showInfo && (
         <PatientInfoOverlay patient={patient} onClose={() => setShowInfo(false)} />
+      )}
+
+      {/* Results log bottom sheet */}
+      {showResults && (
+        <ResultsLogOverlay onClose={() => setShowResults(false)} />
       )}
     </div>
   );
