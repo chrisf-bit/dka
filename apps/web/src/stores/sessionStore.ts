@@ -45,6 +45,9 @@ interface SessionStore {
   // Debrief
   debrief: DebriefData | null;
 
+  // UI state
+  hasDismissedBriefing: boolean;
+
   // Pending action results
   pendingActions: Map<string, { actionKey: string; delayMs: number; submittedAt: number }>;
   actionResults: Map<string, Record<string, unknown>>;
@@ -80,6 +83,7 @@ interface SessionStore {
   addAlert: (alert: Omit<Alert, 'id' | 'timestamp'>) => void;
   dismissAlert: (id: string) => void;
   setDebrief: (debrief: DebriefData) => void;
+  dismissBriefing: () => void;
   addPendingAction: (patientId: string, actionKey: string, delayMs: number) => void;
   setActionResult: (patientId: string, actionKey: string, result: Record<string, unknown>) => void;
   clearActionResult: (key: string) => void;
@@ -113,6 +117,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   simClockMs: 0,
   alerts: [],
   debrief: null,
+  hasDismissedBriefing: false,
   pendingActions: new Map(),
   actionResults: new Map(),
 
@@ -195,6 +200,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     })),
 
   setDebrief: (debrief) => set({ debrief }),
+  dismissBriefing: () => set({ hasDismissedBriefing: true }),
 
   addPendingAction: (patientId, actionKey, delayMs) => {
     const key = `${patientId}:${actionKey}`;
@@ -237,6 +243,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       simClockMs: 0,
       alerts: [],
       debrief: null,
+      hasDismissedBriefing: false,
       userId: null,
       error: null,
       pendingActions: new Map(),

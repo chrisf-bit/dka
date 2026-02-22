@@ -63,6 +63,11 @@ export default function PatientCard({ patient, assignedUser, expanded, onClick }
     resolved: 'bg-nhs-lightBlue/20 text-nhs-lightBlue',
   };
 
+  const totalActions = patient.availableActions.length;
+  const doneActions = patient.completedActions.length;
+  const pendingCount = patient.pendingActions.length;
+  const progressPct = totalActions > 0 ? (doneActions / totalActions) * 100 : 0;
+
   return (
     <div
       ref={cardRef}
@@ -76,7 +81,7 @@ export default function PatientCard({ patient, assignedUser, expanded, onClick }
         <div>
           <div className="font-bold text-sm">{patient.name}</div>
           <div className="text-xs text-sim-textMuted">
-            {patient.age}y • {patient.parity} • {patient.gestation}
+            {patient.age}y &middot; {patient.parity} &middot; {patient.gestation}
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -105,7 +110,25 @@ export default function PatientCard({ patient, assignedUser, expanded, onClick }
       {/* Vitals mini or full */}
       <VitalsPanel vitals={patient.currentVitals} status={patient.status} compact={!expanded} />
 
-      {/* Expanded: CTG + actions */}
+      {/* Action progress bar */}
+      <div className="mt-2 flex items-center gap-2">
+        <div className="flex-1 h-1.5 bg-sim-bg rounded-full overflow-hidden">
+          <div
+            className="h-full bg-nhs-lightBlue rounded-full transition-all duration-500"
+            style={{ width: `${progressPct}%` }}
+          />
+        </div>
+        <span className="text-[10px] text-sim-textMuted font-mono shrink-0">
+          {doneActions}/{totalActions}
+        </span>
+        {pendingCount > 0 && (
+          <span className="text-[10px] text-nhs-lightBlue animate-pulse">
+            {pendingCount} pending
+          </span>
+        )}
+      </div>
+
+      {/* Expanded: CTG + actions detail */}
       {expanded && (
         <div className="mt-3 space-y-2">
           <div className="bg-sim-bg rounded-lg p-2">
@@ -126,10 +149,14 @@ export default function PatientCard({ patient, assignedUser, expanded, onClick }
               {patient.fetalStatus.replace('_', '-')}
             </span>
           </div>
-          <div className="bg-sim-bg rounded-lg p-2">
-            <span className="text-xs text-sim-textMuted">Actions completed: </span>
-            <span className="text-xs">{patient.completedActions.length}</span>
-          </div>
+          {patient.completedActions.length > 0 && (
+            <div className="bg-sim-bg rounded-lg p-2">
+              <span className="text-xs text-sim-textMuted">Completed: </span>
+              <span className="text-xs text-sim-stable">
+                {patient.completedActions.join(', ')}
+              </span>
+            </div>
+          )}
         </div>
       )}
     </div>

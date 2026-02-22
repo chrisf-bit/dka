@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useSessionStore } from '../stores/sessionStore';
 import { socket } from '../lib/socket';
 import QRCodeDisplay from '../components/QRCodeDisplay';
-import { Clock } from 'lucide-react';
+import BriefingCards from '../components/BriefingCards';
+import { Clock, BookOpen } from 'lucide-react';
 import gsap from 'gsap';
 
 export default function Lobby() {
@@ -11,7 +12,10 @@ export default function Lobby() {
   const session = useSessionStore((s) => s.session);
   const users = useSessionStore((s) => s.users);
   const patients = useSessionStore((s) => s.patients);
+  const scenario = useSessionStore((s) => s.scenario);
   const myUser = useSessionStore((s) => s.myUser);
+  const hasDismissedBriefing = useSessionStore((s) => s.hasDismissedBriefing);
+  const dismissBriefing = useSessionStore((s) => s.dismissBriefing);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const isFacilitator = myUser()?.role === 'facilitator';
@@ -69,6 +73,18 @@ export default function Lobby() {
     ? `${window.location.origin}/join/${session.code}`
     : '';
 
+  // Show briefing cards for participants who haven't dismissed them
+  if (!isFacilitator && !hasDismissedBriefing && scenario) {
+    return (
+      <BriefingCards
+        briefing={scenario.briefing}
+        patientCount={scenario.patients.length}
+        durationMinutes={scenario.durationMinutes}
+        onDismiss={dismissBriefing}
+      />
+    );
+  }
+
   return (
     <div ref={containerRef} className="h-full flex flex-col p-4 gap-4 overflow-hidden">
       {/* Header */}
@@ -88,7 +104,7 @@ export default function Lobby() {
         <div className="flex-1 flex flex-col lg:flex-row gap-4 overflow-hidden">
           {/* Left: QR + join info */}
           <div className="card flex flex-col items-center justify-center gap-3 lg:w-1/3">
-            <p className="text-sim-textMuted text-sm">Participants scan to join:</p>
+            <p className="text-sim-textMuted text-sm">Teams scan to join:</p>
             <QRCodeDisplay url={joinUrl} />
             <p className="font-mono text-sm text-sim-textMuted break-all text-center">
               {joinUrl}
@@ -99,7 +115,7 @@ export default function Lobby() {
           <div className="card flex-1 flex flex-col gap-3 overflow-hidden">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold">
-                Participants ({participants.length})
+                Teams ({participants.length})
               </h2>
               <button
                 onClick={handleAutoAssign}
@@ -112,7 +128,7 @@ export default function Lobby() {
 
             {participants.length === 0 ? (
               <div className="flex-1 flex items-center justify-center text-sim-textMuted">
-                Waiting for participants to join...
+                Waiting for teams to join...
               </div>
             ) : (
               <div className="flex-1 overflow-auto scrollable">
@@ -155,7 +171,7 @@ export default function Lobby() {
             >
               {!allAssigned
                 ? 'Assign all patients first'
-                : `Start Simulation (${participants.length} participants)`}
+                : `Start Simulation (${participants.length} teams)`}
             </button>
           </div>
         </div>
@@ -168,7 +184,7 @@ export default function Lobby() {
           <div className="text-center">
             <p className="text-xl font-semibold">Waiting for facilitator to start</p>
             <p className="text-sim-textMuted mt-2">
-              You are: <span className="text-white font-medium">{myUser()?.name}</span>
+              Team: <span className="text-white font-medium">{myUser()?.name}</span>
             </p>
             {myUser()?.assignedPatientId && (
               <p className="text-nhs-lightBlue mt-2 text-sm">
@@ -176,6 +192,13 @@ export default function Lobby() {
               </p>
             )}
           </div>
+          <button
+            onClick={() => useSessionStore.setState({ hasDismissedBriefing: false })}
+            className="flex items-center gap-2 text-sm text-sim-textMuted hover:text-nhs-lightBlue transition-colors"
+          >
+            <BookOpen className="w-4 h-4" />
+            Review briefing
+          </button>
         </div>
       )}
     </div>

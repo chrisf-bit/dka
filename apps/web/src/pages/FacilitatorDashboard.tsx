@@ -6,7 +6,8 @@ import PatientCard from '../components/PatientCard';
 import EventLog from '../components/EventLog';
 import ResourcePanel from '../components/ResourcePanel';
 import TimerBar from '../components/TimerBar';
-import { Pause, Play, Square } from 'lucide-react';
+import ConfirmModal from '../components/ConfirmModal';
+import { Pause, Play, Square, Users } from 'lucide-react';
 import gsap from 'gsap';
 
 export default function FacilitatorDashboard() {
@@ -17,6 +18,7 @@ export default function FacilitatorDashboard() {
   const debrief = useSessionStore((s) => s.debrief);
   const [expandedPatient, setExpandedPatient] = useState<string | null>(null);
   const [injectMessage, setInjectMessage] = useState('');
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -44,9 +46,14 @@ export default function FacilitatorDashboard() {
   };
 
   const handleEnd = () => {
-    if (session && confirm('End the simulation? This cannot be undone.')) {
+    setShowEndConfirm(true);
+  };
+
+  const confirmEnd = () => {
+    if (session) {
       socket.emit('facilitator:end', { sessionId: session.id });
     }
+    setShowEndConfirm(false);
   };
 
   const handleInject = () => {
@@ -62,13 +69,34 @@ export default function FacilitatorDashboard() {
   const participants = users.filter((u) => u.role === 'participant');
   const arrivedPatients = patients.filter((p) => p.hasArrived);
 
+  // Overall progress across all patients
+  const totalActions = arrivedPatients.reduce((sum, p) => sum + p.availableActions.length, 0);
+  const doneActions = arrivedPatients.reduce((sum, p) => sum + p.completedActions.length, 0);
+  const overallPct = totalActions > 0 ? Math.round((doneActions / totalActions) * 100) : 0;
+
   return (
     <div ref={containerRef} className="h-full flex flex-col overflow-hidden">
       {/* Top bar: controls */}
       <div className="bg-sim-surface border-b border-sim-border px-4 py-2 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-4">
-          <h1 className="text-lg font-bold hidden md:block">Delivery Suite Dashboard</h1>
+          <h1 className="text-base font-bold hidden md:block">Delivery Suite</h1>
           <TimerBar />
+          {/* Team count */}
+          <div className="hidden sm:flex items-center gap-1.5 text-sm text-sim-textMuted">
+            <Users className="w-4 h-4" />
+            <span className="font-mono">{participants.length}</span>
+            <span className="text-xs">teams</span>
+          </div>
+          {/* Overall progress */}
+          <div className="hidden lg:flex items-center gap-2">
+            <div className="w-24 h-1.5 bg-sim-bg rounded-full overflow-hidden">
+              <div
+                className="h-full bg-nhs-lightBlue rounded-full transition-all duration-500"
+                style={{ width: `${overallPct}%` }}
+              />
+            </div>
+            <span className="text-[10px] text-sim-textMuted font-mono">{overallPct}%</span>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {session?.status === 'running' && (
@@ -90,8 +118,8 @@ export default function FacilitatorDashboard() {
       {/* Main layout */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left: Patient cards */}
-        <div className="flex-1 p-3 overflow-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+        <div className="flex-1 p-3 overflow-auto scrollable">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
             {arrivedPatients.map((patient) => {
               const assignedUser = participants.find(
                 (u) => u.assignedPatientId === patient.id,
@@ -111,6 +139,12 @@ export default function FacilitatorDashboard() {
               );
             })}
           </div>
+
+          {arrivedPatients.length === 0 && (
+            <div className="h-full flex items-center justify-center text-sim-textMuted">
+              Patients arriving soon...
+            </div>
+          )}
         </div>
 
         {/* Right sidebar: event log + resources + inject */}
@@ -155,6 +189,18 @@ export default function FacilitatorDashboard() {
           </div>
         </div>
       </div>
+
+      {/* End simulation confirm modal */}
+      {showEndConfirm && (
+        <ConfirmModal
+          title="End Simulation"
+          message="This will end the simulation for all teams and generate the debrief. This cannot be undone."
+          confirmLabel="End Simulation"
+          danger
+          onConfirm={confirmEnd}
+          onCancel={() => setShowEndConfirm(false)}
+        />
+      )}
     </div>
   );
 }

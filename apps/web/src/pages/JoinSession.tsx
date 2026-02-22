@@ -42,7 +42,7 @@ export default function JoinSession() {
 
   const handleJoin = () => {
     if (!name.trim()) {
-      setError('Please enter your name.');
+      setError('Please enter a team name.');
       return;
     }
     setError(null);
@@ -90,12 +90,12 @@ export default function JoinSession() {
               <span className="text-white/70 text-sm">Session</span>
               <span className="ml-2 font-mono font-bold text-nhs-lightBlue">{code}</span>
             </div>
-            <label className="text-sm text-white font-medium">Your Name</label>
+            <label className="text-sm text-white font-medium">Team Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Sarah"
+              placeholder="e.g. Team Alpha"
               className="w-full px-4 py-3 bg-sim-surface border-2 border-nhs-lightBlue rounded-lg text-white placeholder-white/30 text-xl focus:outline-none focus:ring-2 focus:ring-nhs-lightBlue focus:border-nhs-lightBlue"
               autoFocus
               onKeyDown={(e) => e.key === 'Enter' && handleJoin()}
