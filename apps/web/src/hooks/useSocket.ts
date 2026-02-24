@@ -75,17 +75,8 @@ export function useSocket() {
       store.addPatient(data.patient);
     });
 
-    socket.on('patient:statusChange', (data) => {
-      store.addAlert({
-        patientId: data.patientId,
-        message: `Patient status: ${data.oldStatus} → ${data.newStatus}`,
-        severity:
-          data.newStatus === 'collapsed'
-            ? 'critical'
-            : data.newStatus === 'critical'
-              ? 'high'
-              : 'medium',
-      });
+    socket.on('patient:statusChange', () => {
+      // Alert is already fired via alert:fire event — no duplicate needed
     });
 
     socket.on('action:pending', (data) => {

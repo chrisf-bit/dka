@@ -8,9 +8,11 @@ export default function AlertBanner() {
   const dismissAlert = useSessionStore((s) => s.dismissAlert);
   const hasCompletedTutorial = useSessionStore((s) => s.hasCompletedTutorial);
   const containerRef = useRef<HTMLDivElement>(null);
+  const prevLengthRef = useRef(0);
 
   useEffect(() => {
-    if (containerRef.current && alerts.length > 0) {
+    // Only animate when a new alert is ADDED, not when one is dismissed
+    if (containerRef.current && alerts.length > prevLengthRef.current) {
       const latest = containerRef.current.firstElementChild;
       if (latest) {
         gsap.fromTo(
@@ -31,6 +33,7 @@ export default function AlertBanner() {
         }
       }
     }
+    prevLengthRef.current = alerts.length;
   }, [alerts.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (alerts.length === 0 || !hasCompletedTutorial) return null;

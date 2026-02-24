@@ -10,8 +10,12 @@ interface Props {
 export default function TimerBar({ showControls }: Props) {
   const simClockMs = useSessionStore((s) => s.simClockMs);
   const session = useSessionStore((s) => s.session);
+  const scenario = useSessionStore((s) => s.scenario);
   const timerRef = useRef<HTMLSpanElement>(null);
   const prevClockRef = useRef(0);
+
+  const durationMs = (scenario?.durationMinutes ?? 15) * 60 * 1000;
+  const remainingMs = Math.max(0, durationMs - simClockMs);
 
   useEffect(() => {
     if (timerRef.current && simClockMs !== prevClockRef.current) {
@@ -26,6 +30,7 @@ export default function TimerBar({ showControls }: Props) {
 
   const isRunning = session?.status === 'running';
   const isPaused = session?.status === 'paused';
+  const isLow = remainingMs < 2 * 60 * 1000 && remainingMs > 0;
 
   return (
     <div className="flex items-center gap-3">
@@ -36,9 +41,11 @@ export default function TimerBar({ showControls }: Props) {
       />
       <span
         ref={timerRef}
-        className="font-mono text-2xl font-bold tabular-nums text-white"
+        className={`font-mono text-2xl font-bold tabular-nums ${
+          isLow ? 'text-nhs-emergency' : 'text-white'
+        }`}
       >
-        {formatSimTime(simClockMs)}
+        {formatSimTime(remainingMs)}
       </span>
       {isPaused && (
         <span className="text-xs text-sim-concerning font-medium uppercase tracking-wider">
