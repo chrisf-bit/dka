@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, Users, Target, Layout, AlertTriangle, Activity, FileText, Zap, ArrowDown } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Users, Target, AlertTriangle } from 'lucide-react';
 import gsap from 'gsap';
 
 interface Props {
@@ -48,43 +48,6 @@ export default function BriefingCards({ briefing, patientCount, durationMinutes,
       content: (
         <div className="space-y-3">
           <p className="text-sm text-sim-textMuted leading-relaxed">{briefing}</p>
-        </div>
-      ),
-    },
-    {
-      title: 'Your Screen',
-      icon: <Layout className="w-8 h-8 text-nhs-lightBlue" />,
-      content: (
-        <div className="space-y-2 w-full">
-          <ScreenSection
-            icon={<Activity className="w-3.5 h-3.5 text-sim-critical" />}
-            title="Vitals Strip"
-            desc="Live observations across the top — HR, BP, SpO2 and more"
-          />
-          <ArrowDown className="w-3.5 h-3.5 text-sim-textMuted mx-auto" />
-          <ScreenSection
-            icon={<FileText className="w-3.5 h-3.5 text-nhs-lightBlue" />}
-            title="Patient Info"
-            desc="Tap the file icon for full history, PMH, allergies and CTG"
-          />
-          <ArrowDown className="w-3.5 h-3.5 text-sim-textMuted mx-auto" />
-          <ScreenSection
-            icon={<Zap className="w-3.5 h-3.5 text-sim-concerning" />}
-            title="Actions"
-            desc="Investigate, monitor, escalate and treat — grouped by category"
-          />
-        </div>
-      ),
-    },
-    {
-      title: 'How Actions Work',
-      icon: <Zap className="w-8 h-8 text-nhs-lightBlue" />,
-      content: (
-        <div className="space-y-2">
-          <Step num={1} text="Discuss with your team, then tap an action to submit it" />
-          <Step num={2} text="Some actions take time — watch for the 'processing' state" />
-          <Step num={3} text="Results appear as overlays — read them carefully before deciding next steps" />
-          <Step num={4} text="Some actions unlock others (e.g. IV access before fluids)" />
         </div>
       ),
     },
@@ -181,25 +144,3 @@ export default function BriefingCards({ briefing, patientCount, durationMinutes,
   );
 }
 
-function Step({ num, text }: { num: number; text: string }) {
-  return (
-    <div className="flex items-start gap-3 text-left">
-      <div className="w-6 h-6 rounded-full bg-nhs-blue/30 text-nhs-lightBlue flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">
-        {num}
-      </div>
-      <p className="text-sm text-sim-textMuted">{text}</p>
-    </div>
-  );
-}
-
-function ScreenSection({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
-  return (
-    <div className="flex items-start gap-3 text-left bg-sim-bg rounded-lg px-3 py-2">
-      <div className="shrink-0 mt-0.5">{icon}</div>
-      <div>
-        <div className="text-xs font-semibold text-white">{title}</div>
-        <div className="text-[11px] text-sim-textMuted leading-snug">{desc}</div>
-      </div>
-    </div>
-  );
-}

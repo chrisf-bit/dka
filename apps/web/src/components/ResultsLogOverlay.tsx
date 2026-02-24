@@ -95,28 +95,30 @@ export default function ResultsLogOverlay({ onClose }: Props) {
                         : 'bg-sim-concerning/10 border-sim-concerning/30'
                   }`}
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2 min-w-0">
+                  <div className="flex items-start gap-2">
+                    <div className="shrink-0 mt-0.5">
                       {flag ? (
-                        <AlertTriangle className="w-4 h-4 text-nhs-emergency shrink-0" />
+                        <AlertTriangle className="w-4 h-4 text-nhs-emergency" />
                       ) : isNormal ? (
-                        <CheckCircle className="w-4 h-4 text-sim-stable shrink-0" />
+                        <CheckCircle className="w-4 h-4 text-sim-stable" />
                       ) : (
-                        <ClipboardList className="w-4 h-4 text-sim-concerning shrink-0" />
+                        <ClipboardList className="w-4 h-4 text-sim-concerning" />
                       )}
-                      <span className="text-sm font-medium truncate">{r.label as string}</span>
                     </div>
-                    <span
-                      className={`text-sm font-mono font-bold shrink-0 ${
-                        flag ? 'text-nhs-emergency' : isNormal ? 'text-sim-stable' : 'text-sim-concerning'
-                      }`}
-                    >
-                      {r.value as string}
-                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-medium">{r.label as string}</div>
+                      <div
+                        className={`text-sm font-mono font-bold mt-0.5 break-words ${
+                          flag ? 'text-nhs-emergency' : isNormal ? 'text-sim-stable' : 'text-sim-concerning'
+                        }`}
+                      >
+                        {r.value as string}
+                      </div>
+                      {flag && (
+                        <p className="text-xs text-red-300 mt-1">{flag}</p>
+                      )}
+                    </div>
                   </div>
-                  {flag && (
-                    <p className="text-xs text-red-300 mt-1.5 ml-6">{flag}</p>
-                  )}
                 </div>
               );
             })

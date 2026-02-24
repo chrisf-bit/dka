@@ -9,6 +9,7 @@ import ActionResultOverlay from '../components/ActionResultOverlay';
 import PatientInfoOverlay from '../components/PatientInfoOverlay';
 import ResultsLogOverlay from '../components/ResultsLogOverlay';
 import PrescriptionInputOverlay from '../components/PrescriptionInputOverlay';
+import TutorialOverlay from '../components/TutorialOverlay';
 import { Loader, FileText, ClipboardList } from 'lucide-react';
 import gsap from 'gsap';
 import type { PrescriptionType, Prescription } from '@dka-sim/shared';
@@ -21,6 +22,9 @@ export default function PatientView() {
   const actionResults = useSessionStore((s) => s.actionResults);
   const clearActionResult = useSessionStore((s) => s.clearActionResult);
   const completedResults = useSessionStore((s) => s.completedResults);
+  const hasDismissedBriefing = useSessionStore((s) => s.hasDismissedBriefing);
+  const hasCompletedTutorial = useSessionStore((s) => s.hasCompletedTutorial);
+  const completeTutorial = useSessionStore((s) => s.completeTutorial);
   const [showInfo, setShowInfo] = useState(false);
   const [showResults, setShowResults] = useState(false);
   const [prescriptionAction, setPrescriptionAction] = useState<{
@@ -93,7 +97,7 @@ export default function PatientView() {
   return (
     <div ref={containerRef} className="h-full flex flex-col overflow-hidden">
       {/* Header: patient name + status + info button + timer */}
-      <div className="bg-sim-surface border-b border-sim-border px-3 py-2 flex items-center justify-between shrink-0">
+      <div data-tour="header" className="bg-sim-surface border-b border-sim-border px-3 py-2 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2 min-w-0">
           <div className="min-w-0">
             <div className="font-bold text-sm truncate">{patient.name}</div>
@@ -102,6 +106,7 @@ export default function PatientView() {
             </div>
           </div>
           <button
+            data-tour="info-btn"
             onClick={() => setShowInfo(true)}
             className="shrink-0 p-1.5 rounded-lg bg-sim-surfaceLight hover:bg-nhs-blue/20 transition-colors"
             title="Patient info"
@@ -109,6 +114,7 @@ export default function PatientView() {
             <FileText className="w-4 h-4 text-nhs-lightBlue" />
           </button>
           <button
+            data-tour="results-btn"
             onClick={() => setShowResults(true)}
             className="shrink-0 p-1.5 rounded-lg bg-sim-surfaceLight hover:bg-nhs-blue/20 transition-colors relative"
             title="Results log"
@@ -132,7 +138,7 @@ export default function PatientView() {
       </div>
 
       {/* Vitals strip — compact */}
-      <div className="bg-sim-surface/50 border-b border-sim-border px-3 py-2 shrink-0">
+      <div data-tour="vitals" className="bg-sim-surface/50 border-b border-sim-border px-3 py-2 shrink-0">
         <VitalsPanel vitals={patient.currentVitals} status={patient.status} compact />
       </div>
 
@@ -149,7 +155,7 @@ export default function PatientView() {
       </div>
 
       {/* Actions — flat categorised list */}
-      <div className="flex-1 overflow-auto scrollable p-3">
+      <div data-tour="actions" className="flex-1 overflow-auto scrollable p-3">
         <ActionButtons
           patientId={patient.id}
           isDKA={patient.isDKA}
@@ -188,6 +194,11 @@ export default function PatientView() {
           onConfirm={handlePrescriptionConfirm}
           onCancel={() => setPrescriptionAction(null)}
         />
+      )}
+
+      {/* Interactive tutorial — shows after briefing, before first interaction */}
+      {hasDismissedBriefing && !hasCompletedTutorial && (
+        <TutorialOverlay onComplete={completeTutorial} />
       )}
     </div>
   );

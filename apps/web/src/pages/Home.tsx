@@ -29,7 +29,7 @@ export default function Home() {
   return (
     <div ref={containerRef} className="h-full flex flex-col items-center justify-center p-6">
       <div ref={titleRef} className="text-center mb-8">
-        <Hospital className="w-16 h-16 mx-auto mb-3 text-nhs-lightBlue" />
+        <Hospital className="w-16 h-16 mx-auto mb-3 text-nhs-lightBlue" strokeWidth={1.25} />
         <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
           DKA Sim
         </h1>

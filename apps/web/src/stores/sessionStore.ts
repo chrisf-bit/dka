@@ -47,6 +47,7 @@ interface SessionStore {
 
   // UI state
   hasDismissedBriefing: boolean;
+  hasCompletedTutorial: boolean;
 
   // Pending action results
   pendingActions: Map<string, { actionKey: string; delayMs: number; submittedAt: number }>;
@@ -85,6 +86,7 @@ interface SessionStore {
   dismissAlert: (id: string) => void;
   setDebrief: (debrief: DebriefData) => void;
   dismissBriefing: () => void;
+  completeTutorial: () => void;
   addPendingAction: (patientId: string, actionKey: string, delayMs: number) => void;
   setActionResult: (patientId: string, actionKey: string, result: Record<string, unknown>) => void;
   clearActionResult: (key: string) => void;
@@ -119,6 +121,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   alerts: [],
   debrief: null,
   hasDismissedBriefing: false,
+  hasCompletedTutorial: false,
   pendingActions: new Map(),
   actionResults: new Map(),
   completedResults: [],
@@ -203,6 +206,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
 
   setDebrief: (debrief) => set({ debrief }),
   dismissBriefing: () => set({ hasDismissedBriefing: true }),
+  completeTutorial: () => set({ hasCompletedTutorial: true }),
 
   addPendingAction: (patientId, actionKey, delayMs) => {
     const key = `${patientId}:${actionKey}`;
@@ -252,6 +256,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       alerts: [],
       debrief: null,
       hasDismissedBriefing: false,
+      hasCompletedTutorial: false,
       userId: null,
       error: null,
       pendingActions: new Map(),
