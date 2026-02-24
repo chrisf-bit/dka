@@ -6,6 +6,7 @@ import gsap from 'gsap';
 export default function AlertBanner() {
   const alerts = useSessionStore((s) => s.alerts);
   const dismissAlert = useSessionStore((s) => s.dismissAlert);
+  const hasCompletedTutorial = useSessionStore((s) => s.hasCompletedTutorial);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export default function AlertBanner() {
     }
   }, [alerts.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (alerts.length === 0) return null;
+  if (alerts.length === 0 || !hasCompletedTutorial) return null;
 
   const severityClasses: Record<string, string> = {
     critical: 'bg-nhs-emergency/95 border-red-400',
