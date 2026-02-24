@@ -15,9 +15,9 @@ const testConfig: ClinicalRulesConfig = {
   investigations: [],
   escalation: { newsScoreThreshold: 5, autoEscalateAt: 'critical' },
   treatment: {
-    fluidProtocol: { firstBagVolume: 1000, firstBagRateMinutes: 60, subsequentRate: 250 },
-    insulinProtocol: { startAfterFluids: true, rate: 0.1 },
-    potassiumProtocol: { checkBeforeInsulin: true, replaceIfBelow: 5.5 },
+    fluidProtocol: { firstBagVolume: 1000, firstBagDurationMinutes: 60, sbpShockedThreshold: 90, subsequentRate: 250 },
+    insulinProtocol: { startAfterFluids: true, rateUnitsPerKgPerHr: 0.1, maxRateMlPerHr: 15.0 },
+    potassiumProtocol: { checkBeforeInsulin: true, lowThreshold: 3.5, highThreshold: 5.5 },
   },
   deteriorationCurves: {
     dka: {

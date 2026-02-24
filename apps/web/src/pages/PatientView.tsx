@@ -1,14 +1,17 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSessionStore } from '../stores/sessionStore';
+import { socket } from '../lib/socket';
 import VitalsPanel from '../components/VitalsPanel';
 import ActionButtons from '../components/ActionButtons';
 import TimerBar from '../components/TimerBar';
 import ActionResultOverlay from '../components/ActionResultOverlay';
 import PatientInfoOverlay from '../components/PatientInfoOverlay';
 import ResultsLogOverlay from '../components/ResultsLogOverlay';
+import PrescriptionInputOverlay from '../components/PrescriptionInputOverlay';
 import { Loader, FileText, ClipboardList } from 'lucide-react';
 import gsap from 'gsap';
+import type { PrescriptionType, Prescription } from '@dka-sim/shared';
 
 export default function PatientView() {
   const navigate = useNavigate();
@@ -20,6 +23,10 @@ export default function PatientView() {
   const completedResults = useSessionStore((s) => s.completedResults);
   const [showInfo, setShowInfo] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [prescriptionAction, setPrescriptionAction] = useState<{
+    actionKey: string;
+    prescriptionType: PrescriptionType;
+  } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const patient = myPatient();
@@ -39,6 +46,26 @@ export default function PatientView() {
       );
     }
   }, []);
+
+  const handlePrescriptionRequired = useCallback(
+    (actionKey: string, prescriptionType: PrescriptionType) => {
+      setPrescriptionAction({ actionKey, prescriptionType });
+    },
+    [],
+  );
+
+  const handlePrescriptionConfirm = useCallback(
+    (prescription: Prescription) => {
+      if (!prescriptionAction || !patient) return;
+      socket.emit('action:submit', {
+        patientId: patient.id,
+        actionKey: prescriptionAction.actionKey,
+        prescription,
+      });
+      setPrescriptionAction(null);
+    },
+    [prescriptionAction, patient],
+  );
 
   if (!patient) {
     return (
@@ -125,9 +152,11 @@ export default function PatientView() {
       <div className="flex-1 overflow-auto scrollable p-3">
         <ActionButtons
           patientId={patient.id}
+          isDKA={patient.isDKA}
           availableActions={patient.availableActions}
           completedActions={patient.completedActions}
           actionDefinitions={actionDefinitions}
+          onPrescriptionRequired={handlePrescriptionRequired}
         />
       </div>
 
@@ -147,6 +176,18 @@ export default function PatientView() {
       {/* Results log bottom sheet */}
       {showResults && (
         <ResultsLogOverlay onClose={() => setShowResults(false)} />
+      )}
+
+      {/* Prescription input overlay */}
+      {prescriptionAction && (
+        <PrescriptionInputOverlay
+          prescriptionType={prescriptionAction.prescriptionType}
+          patientWeight={patient.weight}
+          patientSBP={patient.currentVitals.bpSystolic}
+          lastKnownPotassium={patient.lastKnownPotassium}
+          onConfirm={handlePrescriptionConfirm}
+          onCancel={() => setPrescriptionAction(null)}
+        />
       )}
     </div>
   );

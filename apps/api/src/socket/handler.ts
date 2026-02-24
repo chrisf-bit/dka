@@ -283,6 +283,7 @@ export function setupSocketHandlers(
           session.simClockMs,
           configVersion.config,
           resources,
+          parsed.prescription,
         );
 
         if ('error' in result) {

@@ -38,6 +38,16 @@ export default function ActionResultOverlay({ result, onDismiss }: Props) {
 
   const isNormal = result.normal as boolean;
   const flag = result.flag as string | undefined;
+  const prescriptionFeedback = result.prescriptionFeedback as
+    | { accuracy: string; expectedValue: string; feedback: string }
+    | undefined;
+
+  const feedbackColors: Record<string, { bg: string; border: string; text: string; label: string }> = {
+    correct: { bg: 'bg-sim-stable/20', border: 'border-sim-stable/40', text: 'text-green-200', label: 'Correct' },
+    acceptable: { bg: 'bg-amber-900/30', border: 'border-amber-500/40', text: 'text-amber-200', label: 'Acceptable' },
+    incorrect: { bg: 'bg-amber-900/30', border: 'border-amber-500/40', text: 'text-amber-200', label: 'Incorrect' },
+    dangerous: { bg: 'bg-nhs-emergency/20', border: 'border-nhs-emergency/40', text: 'text-red-200', label: 'Dangerous' },
+  };
 
   return (
     <div
@@ -74,6 +84,25 @@ export default function ActionResultOverlay({ result, onDismiss }: Props) {
             <p className="text-sm text-red-200 font-medium">{flag}</p>
           </div>
         )}
+
+        {prescriptionFeedback && (() => {
+          const style = feedbackColors[prescriptionFeedback.accuracy] ?? feedbackColors.incorrect;
+          return (
+            <div className={`${style.bg} border ${style.border} rounded-lg p-3 mb-3`}>
+              <div className="flex items-center gap-2 mb-1">
+                <span className={`text-xs font-bold uppercase px-1.5 py-0.5 rounded ${style.bg} ${style.text}`}>
+                  {style.label}
+                </span>
+                <span className="text-xs text-sim-textMuted">
+                  Expected: {prescriptionFeedback.expectedValue}
+                </span>
+              </div>
+              <p className={`text-sm ${style.text} font-medium`}>
+                {prescriptionFeedback.feedback}
+              </p>
+            </div>
+          );
+        })()}
 
         <button
           onClick={onDismiss}

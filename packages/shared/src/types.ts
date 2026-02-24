@@ -72,6 +72,7 @@ export interface Patient {
   isAlive: boolean;
   fetalStatus: FetalStatus;
   isDKA: boolean;
+  lastKnownPotassium?: number;
   deteriorationType: string;
   currentStageIndex: number;
   stageEnteredAtMs: number;
@@ -88,6 +89,7 @@ export interface PendingAction {
   submittedAtMs: number;
   completesAtMs: number;
   userId: string;
+  prescription?: Prescription;
 }
 
 export interface InterventionEffect {
@@ -111,6 +113,35 @@ export interface EventLogEntry {
   createdAt: number;
 }
 
+// ─── Prescriptions ──────────────────────────────────────────────────────────
+
+export type PrescriptionType = 'iv_fluids' | 'insulin' | 'potassium';
+
+export interface FluidPrescription {
+  type: 'iv_fluids';
+  durationMinutes: number;
+}
+
+export interface InsulinPrescription {
+  type: 'insulin';
+  rateMlPerHr: number;
+}
+
+export interface PotassiumPrescription {
+  type: 'potassium';
+  concentrationMmol: number;
+}
+
+export type Prescription = FluidPrescription | InsulinPrescription | PotassiumPrescription;
+
+export type PrescriptionAccuracy = 'correct' | 'acceptable' | 'incorrect' | 'dangerous';
+
+export interface PrescriptionFeedback {
+  accuracy: PrescriptionAccuracy;
+  expectedValue: string;
+  feedback: string;
+}
+
 // ─── Actions ─────────────────────────────────────────────────────────────────
 
 export interface ActionDefinition {
@@ -121,6 +152,8 @@ export interface ActionDefinition {
   delayMs: number;
   prerequisites: string[];
   icon: string;
+  requiresPrescription?: boolean;
+  prescriptionType?: PrescriptionType;
 }
 
 // ─── Resources ───────────────────────────────────────────────────────────────
@@ -162,16 +195,19 @@ export interface ClinicalRulesConfig {
   treatment: {
     fluidProtocol: {
       firstBagVolume: number;
-      firstBagRateMinutes: number;
+      firstBagDurationMinutes: number;
+      sbpShockedThreshold: number;
       subsequentRate: number;
     };
     insulinProtocol: {
       startAfterFluids: boolean;
-      rate: number;
+      rateUnitsPerKgPerHr: number;
+      maxRateMlPerHr: number;
     };
     potassiumProtocol: {
       checkBeforeInsulin: boolean;
-      replaceIfBelow: number;
+      lowThreshold: number;
+      highThreshold: number;
     };
   };
 
@@ -314,7 +350,7 @@ export interface ClientToServerEvents {
     resource: string;
     available: boolean;
   }) => void;
-  'action:submit': (data: { patientId: string; actionKey: string }) => void;
+  'action:submit': (data: { patientId: string; actionKey: string; prescription?: Prescription }) => void;
 }
 
 export interface ServerToClientEvents {

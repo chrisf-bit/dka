@@ -3,7 +3,7 @@ import { socket } from '../lib/socket';
 import { useSessionStore } from '../stores/sessionStore';
 import { Search, BarChart3, Phone, Syringe, CheckCircle, Loader, Play } from 'lucide-react';
 import gsap from 'gsap';
-import type { ActionDefinition, ActionCategory } from '@dka-sim/shared';
+import type { ActionDefinition, ActionCategory, PrescriptionType } from '@dka-sim/shared';
 
 /** Simple seeded PRNG so the shuffle is stable per patient */
 function seededRandom(seed: string) {
@@ -30,9 +30,11 @@ function shuffleArray<T>(arr: T[], rng: () => number): T[] {
 
 interface Props {
   patientId: string;
+  isDKA: boolean;
   availableActions: string[];
   completedActions: string[];
   actionDefinitions: ActionDefinition[];
+  onPrescriptionRequired: (actionKey: string, prescriptionType: PrescriptionType) => void;
 }
 
 const CATEGORY_META: Record<ActionCategory, { label: string; icon: React.ReactNode }> = {
@@ -46,9 +48,11 @@ const CATEGORY_ORDER: ActionCategory[] = ['investigation', 'monitoring', 'escala
 
 export default function ActionButtons({
   patientId,
+  isDKA,
   availableActions,
   completedActions,
   actionDefinitions,
+  onPrescriptionRequired,
 }: Props) {
   const pendingActions = useSessionStore((s) => s.pendingActions);
   const resources = useSessionStore((s) => s.resources);
@@ -73,6 +77,16 @@ export default function ActionButtons({
         { scale: 1, duration: 0.3, ease: 'elastic.out(1, 0.5)' },
       );
     }
+
+    // Intercept prescription-requiring actions for DKA patients
+    if (isDKA) {
+      const actionDef = actionDefinitions.find((a) => a.key === actionKey);
+      if (actionDef?.requiresPrescription && actionDef.prescriptionType) {
+        onPrescriptionRequired(actionKey, actionDef.prescriptionType);
+        return;
+      }
+    }
+
     socket.emit('action:submit', { patientId, actionKey });
   };
 

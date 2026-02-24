@@ -28,9 +28,31 @@ export const AssignPatientSchema = z.object({
   patientId: z.string().uuid(),
 });
 
+export const FluidPrescriptionSchema = z.object({
+  type: z.literal('iv_fluids'),
+  durationMinutes: z.number().min(15).max(240),
+});
+
+export const InsulinPrescriptionSchema = z.object({
+  type: z.literal('insulin'),
+  rateMlPerHr: z.number().min(1.0).max(15.0),
+});
+
+export const PotassiumPrescriptionSchema = z.object({
+  type: z.literal('potassium'),
+  concentrationMmol: z.number().min(0).max(40),
+});
+
+export const PrescriptionSchema = z.discriminatedUnion('type', [
+  FluidPrescriptionSchema,
+  InsulinPrescriptionSchema,
+  PotassiumPrescriptionSchema,
+]);
+
 export const SubmitActionSchema = z.object({
   patientId: z.string().uuid(),
   actionKey: z.string().min(1),
+  prescription: PrescriptionSchema.optional(),
 });
 
 export const ToggleResourceSchema = z.object({

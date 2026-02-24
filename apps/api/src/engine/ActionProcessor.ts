@@ -4,9 +4,11 @@ import type {
   ActionDefinition,
   ResourceState,
   PendingAction,
+  Prescription,
 } from '@dka-sim/shared';
 import * as db from '../data/db.js';
 import { applyIntervention } from './DeteriorationEngine.js';
+import { validatePrescription } from './PrescriptionValidator.js';
 
 /**
  * Get an action definition from the config.
@@ -86,11 +88,17 @@ export function submitAction(
   simClockMs: number,
   config: ClinicalRulesConfig,
   resources: ResourceState,
+  prescription?: Prescription,
 ): { pending: PendingAction; delayMs: number } | { error: string } {
   const check = canPerformAction(patient, actionKey, config, resources);
   if (!check.allowed) return { error: check.reason! };
 
   const actionDef = getActionDef(config, actionKey)!;
+
+  // Require prescription for DKA treatment actions
+  if (actionDef.requiresPrescription && patient.isDKA && !prescription) {
+    return { error: 'Prescription required for this action.' };
+  }
 
   // Calculate delay (may be extended by lab delays)
   let delayMs = actionDef.delayMs;
@@ -103,6 +111,7 @@ export function submitAction(
     submittedAtMs: simClockMs,
     completesAtMs: simClockMs + delayMs,
     userId,
+    prescription: actionDef.requiresPrescription && patient.isDKA ? prescription : undefined,
   };
 
   const pendingActions = [...patient.pendingActions, pending];
@@ -126,7 +135,7 @@ export function processCompletedActions(
   for (const pa of patient.pendingActions) {
     if (simClockMs >= pa.completesAtMs) {
       // Action completed — generate result
-      const result = generateActionResult(patient, pa.actionKey, config, simClockMs);
+      const result = generateActionResult(patient, pa.actionKey, config, simClockMs, pa.prescription);
       completed.push({ actionKey: pa.actionKey, result });
 
       // Mark action as completed
@@ -156,6 +165,7 @@ function generateActionResult(
   actionKey: string,
   config: ClinicalRulesConfig,
   simClockMs: number,
+  prescription?: Prescription,
 ): Record<string, unknown> {
   const curve = config.deteriorationCurves[patient.deteriorationType];
   const currentStage = curve?.stages[patient.currentStageIndex];
@@ -232,6 +242,8 @@ function generateActionResult(
       // K+ can be normal or high in DKA (despite total body depletion)
       const k = patient.isDKA ? 4.8 + Math.random() * 1.5 : 3.8 + Math.random() * 0.8;
       const rounded = Math.round(k * 10) / 10;
+      // Store K+ on patient for potassium prescription validation
+      db.updatePatient(patient.id, { lastKnownPotassium: rounded });
       return {
         label: 'Serum Potassium',
         value: `${rounded} mmol/L`,
@@ -361,32 +373,77 @@ function generateActionResult(
     }
 
     case 'start_iv_fluids': {
-      if (patient.isDKA) {
-        // Significant slowing of deterioration
-        applyIntervention(patient.id, 'slow', simClockMs, 3.0);
+      if (patient.isDKA && prescription) {
+        const validation = validatePrescription(prescription, patient, config);
+        const scale = validation.interventionScale;
+        // Scale intervention: full=slow×3.0, acceptable=slow×2.0, incorrect=slow×1.3, dangerous=none
+        if (scale > 0) {
+          const slowFactor = 1.3 + (3.0 - 1.3) * scale;
+          applyIntervention(patient.id, 'slow', simClockMs, slowFactor);
+        }
+        const rx = prescription as { durationMinutes: number };
+        return {
+          label: 'IV Fluids',
+          value: `${config.treatment.fluidProtocol.firstBagVolume}mL 0.9% NaCl commenced over ${rx.durationMinutes} minutes.`,
+          normal: true,
+          isTreatmentEvent: true,
+          prescriptionFeedback: validation.feedback,
+        };
       }
+      // Non-DKA patient — auto-complete without prescription
+      applyIntervention(patient.id, 'slow', simClockMs, 3.0);
       return {
         label: 'IV Fluids',
-        value: `IV access obtained. ${config.treatment.fluidProtocol.firstBagVolume}mL 0.9% NaCl commenced over ${config.treatment.fluidProtocol.firstBagRateMinutes} minutes.`,
+        value: `${config.treatment.fluidProtocol.firstBagVolume}mL 0.9% NaCl commenced.`,
         normal: true,
         isTreatmentEvent: true,
       };
     }
 
     case 'start_insulin': {
-      if (patient.isDKA) {
-        // Halts and begins reversal
-        applyIntervention(patient.id, 'halt', simClockMs);
+      if (patient.isDKA && prescription) {
+        const validation = validatePrescription(prescription, patient, config);
+        const scale = validation.interventionScale;
+        // Scale intervention: full=halt, acceptable=slow×4.0, incorrect=slow×2.0, dangerous=none
+        if (scale >= 1.0) {
+          applyIntervention(patient.id, 'halt', simClockMs);
+        } else if (scale > 0) {
+          const slowFactor = 2.0 + (4.0 - 2.0) * (scale / 0.7);
+          applyIntervention(patient.id, 'slow', simClockMs, slowFactor);
+        }
+        const rx = prescription as { rateMlPerHr: number };
+        return {
+          label: 'Insulin Infusion',
+          value: `Fixed-rate insulin infusion commenced at ${rx.rateMlPerHr} ml/hr.`,
+          normal: true,
+          isTreatmentEvent: true,
+          prescriptionFeedback: validation.feedback,
+        };
       }
+      // Non-DKA fallback
+      applyIntervention(patient.id, 'halt', simClockMs);
       return {
         label: 'Insulin Infusion',
-        value: `Fixed-rate insulin infusion commenced at ${config.treatment.insulinProtocol.rate} units/kg/hr.`,
+        value: 'Fixed-rate insulin infusion commenced.',
         normal: true,
         isTreatmentEvent: true,
       };
     }
 
     case 'start_potassium_replacement': {
+      if (patient.isDKA && prescription) {
+        const validation = validatePrescription(prescription, patient, config);
+        const rx = prescription as { concentrationMmol: number };
+        return {
+          label: 'Potassium Replacement',
+          value: rx.concentrationMmol > 0
+            ? `KCl ${rx.concentrationMmol} mmol/L commenced.`
+            : 'No potassium replacement given — withheld as prescribed.',
+          normal: true,
+          isTreatmentEvent: true,
+          prescriptionFeedback: validation.feedback,
+        };
+      }
       return {
         label: 'Potassium Replacement',
         value: 'Potassium replacement commenced as per protocol.',
