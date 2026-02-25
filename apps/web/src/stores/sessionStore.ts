@@ -48,6 +48,7 @@ interface SessionStore {
   // UI state
   hasDismissedBriefing: boolean;
   hasCompletedTutorial: boolean;
+  tutorialClockOffsetMs: number;
 
   // Pending action results
   pendingActions: Map<string, { actionKey: string; delayMs: number; submittedAt: number }>;
@@ -122,6 +123,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   debrief: null,
   hasDismissedBriefing: false,
   hasCompletedTutorial: false,
+  tutorialClockOffsetMs: 0,
   pendingActions: new Map(),
   actionResults: new Map(),
   completedResults: [],
@@ -206,7 +208,10 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
 
   setDebrief: (debrief) => set({ debrief }),
   dismissBriefing: () => set({ hasDismissedBriefing: true }),
-  completeTutorial: () => set({ hasCompletedTutorial: true }),
+  completeTutorial: () => set((s) => ({
+    hasCompletedTutorial: true,
+    tutorialClockOffsetMs: s.simClockMs,
+  })),
 
   addPendingAction: (patientId, actionKey, delayMs) => {
     const key = `${patientId}:${actionKey}`;
@@ -257,6 +262,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
       debrief: null,
       hasDismissedBriefing: false,
       hasCompletedTutorial: false,
+      tutorialClockOffsetMs: 0,
       userId: null,
       error: null,
       pendingActions: new Map(),

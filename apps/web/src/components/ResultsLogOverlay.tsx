@@ -2,6 +2,7 @@ import { useRef, useEffect } from 'react';
 import { X, AlertTriangle, CheckCircle, ClipboardList } from 'lucide-react';
 import gsap from 'gsap';
 import { useSessionStore } from '../stores/sessionStore';
+import { useSheetDrag } from '../hooks/useSheetDrag';
 
 interface Props {
   onClose: () => void;
@@ -11,6 +12,7 @@ export default function ResultsLogOverlay({ onClose }: Props) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
   const completedResults = useSessionStore((s) => s.completedResults);
+  const { handleProps } = useSheetDrag(sheetRef, onClose);
 
   useEffect(() => {
     if (overlayRef.current && sheetRef.current) {
@@ -51,8 +53,8 @@ export default function ResultsLogOverlay({ onClose }: Props) {
         className="w-full max-w-lg bg-sim-surface rounded-t-2xl border-t border-sim-border max-h-[75vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Handle bar */}
-        <div className="flex justify-center pt-3 pb-1 shrink-0">
+        {/* Handle bar — drag to dismiss */}
+        <div {...handleProps} className="flex justify-center pt-3 pb-1 shrink-0">
           <div className="w-10 h-1 bg-sim-border rounded-full" />
         </div>
 

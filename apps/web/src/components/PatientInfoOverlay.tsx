@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { X } from 'lucide-react';
 import gsap from 'gsap';
+import { useSheetDrag } from '../hooks/useSheetDrag';
 import type { Patient } from '@dka-sim/shared';
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
 export default function PatientInfoOverlay({ patient, onClose }: Props) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
+  const { handleProps } = useSheetDrag(sheetRef, onClose);
 
   useEffect(() => {
     if (overlayRef.current && sheetRef.current) {
@@ -48,8 +50,8 @@ export default function PatientInfoOverlay({ patient, onClose }: Props) {
         className="w-full max-w-lg bg-sim-surface rounded-t-2xl border-t border-sim-border max-h-[75vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Handle bar */}
-        <div className="flex justify-center pt-3 pb-1 shrink-0">
+        {/* Handle bar — drag to dismiss */}
+        <div {...handleProps} className="flex justify-center pt-3 pb-1 shrink-0">
           <div className="w-10 h-1 bg-sim-border rounded-full" />
         </div>
 

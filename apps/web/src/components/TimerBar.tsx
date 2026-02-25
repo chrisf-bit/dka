@@ -5,17 +5,26 @@ import gsap from 'gsap';
 
 interface Props {
   showControls?: boolean;
+  adjustForTutorial?: boolean;
 }
 
-export default function TimerBar({ showControls }: Props) {
+export default function TimerBar({ showControls, adjustForTutorial }: Props) {
   const simClockMs = useSessionStore((s) => s.simClockMs);
   const session = useSessionStore((s) => s.session);
   const scenario = useSessionStore((s) => s.scenario);
+  const hasCompletedTutorial = useSessionStore((s) => s.hasCompletedTutorial);
+  const tutorialClockOffsetMs = useSessionStore((s) => s.tutorialClockOffsetMs);
   const timerRef = useRef<HTMLSpanElement>(null);
   const prevClockRef = useRef(0);
 
   const durationMs = (scenario?.durationMinutes ?? 15) * 60 * 1000;
-  const remainingMs = Math.max(0, durationMs - simClockMs);
+  // For players: freeze at full duration until tutorial is done, then count from that point
+  const elapsedMs = adjustForTutorial && !hasCompletedTutorial
+    ? 0
+    : adjustForTutorial
+      ? simClockMs - tutorialClockOffsetMs
+      : simClockMs;
+  const remainingMs = Math.max(0, durationMs - elapsedMs);
 
   useEffect(() => {
     if (timerRef.current && simClockMs !== prevClockRef.current) {

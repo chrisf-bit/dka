@@ -133,7 +133,7 @@ export default function PatientView() {
           >
             {statusLabel[patient.status]}
           </span>
-          <TimerBar />
+          <TimerBar adjustForTutorial />
         </div>
       </div>
 

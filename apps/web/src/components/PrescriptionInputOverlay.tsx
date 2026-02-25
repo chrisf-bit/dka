@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import gsap from 'gsap';
+import { useSheetDrag } from '../hooks/useSheetDrag';
 import type { Prescription, PrescriptionType } from '@dka-sim/shared';
 
 interface Props {
@@ -22,6 +23,7 @@ export default function PrescriptionInputOverlay({
 }: Props) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const sheetRef = useRef<HTMLDivElement>(null);
+  const { handleProps } = useSheetDrag(sheetRef, onCancel);
 
   useEffect(() => {
     if (overlayRef.current && sheetRef.current) {
@@ -59,8 +61,8 @@ export default function PrescriptionInputOverlay({
         className="w-full max-w-lg bg-sim-surface rounded-t-2xl border-t border-sim-border"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Handle bar */}
-        <div className="flex justify-center pt-3 pb-1">
+        {/* Handle bar — drag to dismiss */}
+        <div {...handleProps} className="flex justify-center pt-3 pb-1">
           <div className="w-10 h-1 bg-sim-border rounded-full" />
         </div>
 
